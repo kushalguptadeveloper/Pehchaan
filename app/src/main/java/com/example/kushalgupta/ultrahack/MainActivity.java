@@ -30,10 +30,12 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3DataSource;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     final int RC_PHOTO_PICKER = 29;
@@ -226,9 +228,15 @@ public class MainActivity extends AppCompatActivity {
 //                        ff);
 
 
+        ObjectMetadata objectMetadata =new ObjectMetadata();
+//objectMetadata.addUserMetadata("roll no","029");
+        Map<String,String> userData = objectMetadata.getUserMetadata();
+                userData.put("roll","029");
+        objectMetadata.setUserMetadata(userData);
 
-        TransferObserver uploadObserver = transferUtility.upload(Constants.BUCKET_NAME,"key.jpg",
-                ff);
+
+        TransferObserver uploadObserver = transferUtility.upload(Constants.BUCKET_NAME,"meta2.jpg",
+                ff,  objectMetadata );
         Log.d("fileName", "uploadWithTransferUtility: "+ff.getName());
         // Attach a listener to the observer to get state update and progress notifications
         uploadObserver.setTransferListener(new TransferListener() {
