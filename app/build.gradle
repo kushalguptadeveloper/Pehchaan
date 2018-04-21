@@ -31,7 +31,7 @@ dependencies {
 //    implementation 'com.amazonaws:aws-android-sdk-s3:2.6.+'
 //    implementation 'com.amazonaws:aws-android-sdk-ddb:2.6.+'
 //    implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.6.+@aar') { transitive = true }
-    implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.6.+@aar') { transitive = true }
+    implementation('com.amazonaws:aws-android-sdk-mobile-client:2.6.+@aar') { transitive = true }
     implementation 'com.amazonaws:aws-android-sdk-s3:2.6.+'
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.6.+'
     implementation 'com.amazonaws:aws-android-sdk-ddb-mapper:2.6.+'
@@ -44,7 +44,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.3.2'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.slider:library:1.1.5@aar'
-
 
 //    configurations.all {
 //        resolutionStrategy {
