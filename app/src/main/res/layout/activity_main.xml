@@ -6,7 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.daimajia.slider.library.SliderLayout
+        android:id="@+id/home_fragment_slider"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        />
+
    <Button
+       android:layout_below="@+id/home_fragment_slider"
     android:id="@+id/upload"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -22,6 +29,16 @@
     android:layout_alignParentRight="true"
     android:layout_alignParentEnd="true"
     android:onClick="setFileToDownload"/>
+
+    <Button
+        android:id="@+id/load"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Load data from table"
+        android:layout_below="@+id/download"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        />
 
 
 </RelativeLayout>

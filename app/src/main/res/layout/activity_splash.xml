@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    tools:context="com.example.kushalgupta.ultrahack.Splash"
+    android:background="@android:color/holo_orange_light"
+    android:id="@+id/splash"
+    >
+
+
+    <TextView
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PEHCHAAN"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:id="@+id/textView3"
+        android:textColor="@android:color/black"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25dp"
+        android:layout_below="@id/textView3"
+        android:text="Face Recognition Based Attendence App"
+        android:gravity="center"
+        android:layout_marginTop="20dp"/>
+</RelativeLayout>

@@ -14,20 +14,25 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.AWSStartupHandler;
 import com.amazonaws.mobile.client.AWSStartupResult;
 import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.s3.transferutility.*;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -35,7 +40,18 @@ import com.amazonaws.services.s3.model.S3DataSource;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
+
+
+import static android.view.View.GONE;
 
 public class MainActivity extends AppCompatActivity {
     final int RC_PHOTO_PICKER = 29;
@@ -47,20 +63,50 @@ public class MainActivity extends AppCompatActivity {
     File fileToDownload = new File("/SD card/DCIM/Camera/S3.jpg");
     AmazonS3 s3;
     TransferUtility transferUtility;
-    Button uploadbt;
+    Button uploadbt, loadDB;
     File ff;
     private Util util;
+    DynamoDBMapper dynamoDBMapper;
+    SliderLayout mSliderLayout;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSliderLayout = (SliderLayout) findViewById(R.id.home_fragment_slider);
+        HashMap< String, Integer > file_maps = new HashMap<String, Integer>();
+        file_maps.put("Pehchaan", R.drawable.pehchaan);
+        file_maps.put("face detection", R.drawable.face_reco2);
+        file_maps.put("Jaigarh", R.drawable.f3);
+      //  file_maps.put("Jaipur Image", R.drawable.jaipur_image);
+
+        for (String name : file_maps.keySet()) {
+            TextSliderView textSliderView = new TextSliderView(getApplicationContext());
+//            initialize a SliderLayout
+            textSliderView
+                    .description(name)
+                    .image(file_maps.get(name))
+                    .setScaleType(BaseSliderView.ScaleType.Fit);
+//
+            //add your extra information
+            textSliderView.bundle(new Bundle());
+            textSliderView.getBundle()
+                    .putString("extra", name);
+//
+            mSliderLayout.addSlider(textSliderView);
+        }
+        mSliderLayout.setPresetTransformer(SliderLayout.Transformer.Accordion);
+        mSliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mSliderLayout.setCustomAnimation(new DescriptionAnimation());
+        mSliderLayout.setDuration(4000);
+
 
         Log.d("Tagger", sourceFile.getAbsolutePath());
         Log.d("Tagger", sourceFile.getTotalSpace() + "");
         uploadbt = findViewById(R.id.upload);
-
+        loadDB = findViewById(R.id.load);
         AWSMobileClient.getInstance().initialize(this).execute();
 
 //sample
@@ -69,6 +115,133 @@ public class MainActivity extends AppCompatActivity {
 
 
         //end sample
+//        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
+//
+//            @Override
+//            public void onComplete(AWSStartupResult awsStartupResult) {
+//
+//                // Add code to instantiate a AmazonDynamoDBClient
+//                AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(AWSMobileClient.getInstance().getCredentialsProvider());
+//                dynamoDBMapper = DynamoDBMapper.builder()
+//                        .dynamoDBClient(dynamoDBClient)
+//                        .awsConfiguration(
+//                                AWSMobileClient.getInstance().getConfiguration())
+//                        .build();
+//
+//            }
+//        }).execute();
+
+
+//        loadDB.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                        com.example.kushalgupta.ultrahack.nosqlModel booksItem = dynamoDBMapper.load(
+//                                com.example.kushalgupta.ultrahack.nosqlModel.class,
+//                                "roll_number");    // Sort key (range key)
+//
+//                        // Item read
+//                        Log.d("Books Item:", booksItem.toString());
+//                    }
+//                }).start();
+//            }
+//        });
+
+
+        loadDB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, DownloadActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+    }
+
+    public void setFileToUpload(View view) {
+
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
+                Toast.makeText(this, "permission done", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, 3);
+
+
+            } else {
+                Toast.makeText(this, "Permission Denied. Could not proceed further", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == 3) {
+            if (grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
+
+
+//                Intent imageIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//
+////folder stuff
+//                File imagesFolder = new File(Environment.getExternalStorageDirectory(), "PehchaanCamera");
+//                imagesFolder.mkdirs();
+//
+//                File image = new File(imagesFolder, "camera" + timeStamp + ".png");
+//                Uri uriSavedImage = Uri.fromFile(image);
+//                Log.d("camera", "onRequestPermissionsResult: "+uriSavedImage);
+//                imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
+//                startActivityForResult(imageIntent, 1);
+
+
+                String path = Environment.getExternalStorageDirectory().toString() + "/Pehchaan";
+
+                File dir = new File(path);
+                if (!dir.exists()) {
+                    dir.mkdir();
+                }
+
+                String filename = "Camera" + new SimpleDateFormat("yyyyMMdd_hhmmss").format(new Date()) + ".jpg";
+
+                File image = new File(dir, filename);
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Uri photoURI = FileProvider.getUriForFile(MainActivity.this,
+                      //  BuildConfig.APPLICATION_ID+ ".provider",
+                        "com.example.kushalgupta.ultrahack.fileprovider",
+                        image);
+
+                //  Uri photoURI = Uri.fromFile(image);
+
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                intent.putExtra("return-data", true);
+
+                // startActivityForResult(intent, 1);
+                Log.d("camera", "onRequestPermissionsResult: " + photoURI);
+                //PATH = image.getAbsolutePath();
+
+                startActivityForResult(intent,1);
+
+                imageCaptureSuccess();
+            } else {
+                Toast.makeText(this, "Please allow all permissions in settings", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    public void imageCaptureSuccess() {
+
+        Toast.makeText(this, "pic click success", Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void setFileToDownload(View view) {
 
         Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
         getIntent.setType("image/*");
@@ -81,8 +254,9 @@ public class MainActivity extends AppCompatActivity {
 
         startActivityForResult(chooserIntent, RC_PHOTO_PICKER);
 
-
     }
+
+
     public static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
@@ -126,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                     uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 }
                 selection = "_id=?";
-                selectionArgs = new String[] {
+                selectionArgs = new String[]{
                         split[1]
                 };
             }
@@ -164,8 +338,8 @@ public class MainActivity extends AppCompatActivity {
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
                 }
-              //  Log.d("tag", "onActivityResult: "+selectedImageUri);
-                Log.d("tag", "onActivityResult: "+path);
+                //  Log.d("tag", "onActivityResult: "+selectedImageUri);
+                Log.d("tag", "onActivityResult: " + path);
                 ff = new File(path);
 
                 uploadWithTransferUtility();
@@ -174,6 +348,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     public String getRealPathFromURI(Uri contentUri) {
 
         // can post image
@@ -228,16 +403,16 @@ public class MainActivity extends AppCompatActivity {
 //                        ff);
 
 
-        ObjectMetadata objectMetadata =new ObjectMetadata();
+        ObjectMetadata objectMetadata = new ObjectMetadata();
 //objectMetadata.addUserMetadata("roll no","029");
-        Map<String,String> userData = objectMetadata.getUserMetadata();
-                userData.put("roll","029");
+        Map<String, String> userData = objectMetadata.getUserMetadata();
+        userData.put("roll", "029");
         objectMetadata.setUserMetadata(userData);
 
 
-        TransferObserver uploadObserver = transferUtility.upload(Constants.BUCKET_NAME,"meta2.jpg",
-                ff,  objectMetadata );
-        Log.d("fileName", "uploadWithTransferUtility: "+ff.getName());
+        TransferObserver uploadObserver = transferUtility.upload(Constants.BUCKET_NAME, "meta2.jpg",
+                ff, objectMetadata);
+        Log.d("fileName", "uploadWithTransferUtility: " + ff.getName());
         // Attach a listener to the observer to get state update and progress notifications
         uploadObserver.setTransferListener(new TransferListener() {
 
@@ -273,7 +448,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d("YourActivity", "Bytes Transferrred: " + uploadObserver.getBytesTransferred());
         Log.d("YourActivity", "Bytes Total: " + uploadObserver.getBytesTotal());
     }
+
+
 }
+
 
 //todo
 //        //  callback method to call credentialsProvider method.

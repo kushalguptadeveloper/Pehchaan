@@ -18,5 +18,10 @@
       "Bucket": "mausamrest",
       "Region": "us-east-1"
     }
+  },"DynamoDBObjectMapper": {
+  "Default": {
+    "Region": "us-east-1"
   }
+}
+
 }
