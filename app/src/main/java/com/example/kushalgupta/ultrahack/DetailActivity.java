@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -42,6 +43,8 @@ public class DetailActivity extends AppCompatActivity {
     File ff;
    Util util;
     Uri photoURI;
+    EditText roll;
+    String no;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         capture = findViewById(R.id.capture);
         upload=findViewById(R.id.upload);
+        roll=findViewById(R.id.et_roll);
         AWSMobileClient.getInstance().initialize(this).execute();
 //
 ////sample
@@ -248,11 +252,13 @@ public class DetailActivity extends AppCompatActivity {
         ObjectMetadata objectMetadata = new ObjectMetadata();
 //objectMetadata.addUserMetadata("roll no","029");
         Map<String, String> userData = objectMetadata.getUserMetadata();
-        userData.put("roll", "029");
+        no=roll.getText().toString();
+
+        userData.put("roll", no);
         objectMetadata.setUserMetadata(userData);
 
 
-        TransferObserver uploadObserver = transferUtility.upload(Constants.BUCKET_NAME, "meta2.jpg",
+        TransferObserver uploadObserver = transferUtility.upload(Constants.BUCKET_NAME, "chirag.jpg",
                 ff, objectMetadata);
         Log.d("fileName", "uploadWithTransferUtility: " + ff.getName());
         // Attach a listener to the observer to get state update and progress notifications

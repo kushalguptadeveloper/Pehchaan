@@ -46,7 +46,8 @@
         <activity android:name=".DownloadSelectionActivity" />
         <activity android:name=".secondActivity" />
         <activity android:name=".DetailActivity" />
-        <activity android:name=".mark_attendence"></activity>
+        <activity android:name=".mark_attendence" />
+        <activity android:name=".retroResponse"></activity>
     </application>
 
 </manifest>

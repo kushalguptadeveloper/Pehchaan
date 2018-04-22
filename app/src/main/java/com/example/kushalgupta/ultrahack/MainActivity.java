@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 //    DynamoDBMapper dynamoDBMapper;
     SliderLayout mSliderLayout;
 
-
+Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +107,15 @@ public class MainActivity extends AppCompatActivity {
 //        Log.d("Tagger", sourceFile.getTotalSpace() + "");
 //        uploadbt = findViewById(R.id.upload);
         loadDB = findViewById(R.id.load);
+        button=findViewById(R.id.retro);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,retroResponse.class);
+                startActivity(intent);
+
+            }
+        });
 //        AWSMobileClient.getInstance().initialize(this).execute();
 //
 ////sample

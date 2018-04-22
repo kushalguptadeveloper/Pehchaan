@@ -18,8 +18,8 @@
        android:background="@drawable/gradient6"
        android:layout_margin="5dp"
        android:layout_marginTop="10dp"
-       android:layout_below="@+id/home_fragment_slider"
     android:id="@+id/upload"
+       android:layout_above="@+id/download"
     android:layout_width="match_parent"
     android:layout_height="40dp"
     android:text="Populate Database"
@@ -37,12 +37,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="Mark Attendence"
-    android:layout_below="@+id/upload"
+        android:layout_above="@+id/load"
     android:layout_alignParentRight="true"
-    android:layout_alignParentEnd="true"
     android:onClick="setFileToDownload"/>
 
     <Button
+        android:layout_alignParentBottom="true"
         android:textColor="#fff"
         android:textStyle="bold"
         android:background="@drawable/gradient6"
@@ -53,10 +53,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Download from AWS"
-        android:layout_below="@+id/download"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="30dp" android:layout_above="@id/upload"
+        android:text="retro"
+        android:visibility="invisible"
+        android:id="@+id/retro"/>
 
 
 </RelativeLayout>
